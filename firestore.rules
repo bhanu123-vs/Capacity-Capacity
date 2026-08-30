@@ -1,0 +1,78 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isAuth() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuth() && request.auth.uid == userId;
+    }
+
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isAdmin() {
+      return isAuth() && getUserRole() == 'Admin';
+    }
+
+    function isTrainer() {
+      return isAuth() && (getUserRole() == 'Trainer' || getUserRole() == 'Admin');
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Users Collection: Store user roles (Trainee, Trainer, Admin)
+    match /users/{userId} {
+      allow get: if isAuth();
+      allow list: if isAuth() && (isAdmin() || isTrainer());
+      allow create: if isAuth() && request.auth.uid == userId;
+      allow update: if isAuth() && (request.auth.uid == userId || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Courses Collection
+    match /courses/{courseId} {
+      allow get, list: if isAuth();
+      allow create, update, delete: if isTrainer();
+    }
+
+    // Assessments Collection
+    match /assessments/{assessmentId} {
+      allow get, list: if isAuth();
+      allow create, update, delete: if isTrainer();
+    }
+
+    // Submissions & Attempts
+    match /attempts/{attemptId} {
+      allow get: if isAuth() && (resource.data.traineeId == request.auth.uid || isTrainer());
+      allow list: if isAuth();
+      allow create: if isAuth();
+      allow update, delete: if isAdmin();
+    }
+
+    // Certificates
+    match /certificates/{certId} {
+      allow get: if true; // Public verification allowed by certificate ID
+      allow list: if isAuth();
+      allow create, update: if isTrainer() || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Announcements
+    match /announcements/{annId} {
+      allow get, list: if isAuth();
+      allow create, update, delete: if isAdmin();
+    }
+  }
+}

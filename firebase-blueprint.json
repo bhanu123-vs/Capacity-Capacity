@@ -1,0 +1,105 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User account and role profile for Ministry of Earth Sciences training portal",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the user"
+        },
+        "name": {
+          "type": "string",
+          "description": "Full name of the meteorological officer",
+          "maxLength": 100
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["Trainee", "Trainer", "Admin"],
+          "description": "System access role"
+        },
+        "department": {
+          "type": "string",
+          "description": "Department or Division in MoES / IMD",
+          "maxLength": 100
+        },
+        "designation": {
+          "type": "string",
+          "description": "Official designation / rank",
+          "maxLength": 100
+        },
+        "employeeId": {
+          "type": "string",
+          "description": "Unique MoES / IMD employee identification number",
+          "maxLength": 50
+        },
+        "centerLocation": {
+          "type": "string",
+          "description": "Regional Meteorological Centre (RMC) or field station",
+          "maxLength": 100
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Active", "Pending", "Suspended"]
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Account registration timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last profile update timestamp"
+        }
+      },
+      "required": ["uid", "name", "email", "role"]
+    },
+    "Course": {
+      "title": "Course",
+      "description": "Meteorological curriculum module",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "code": { "type": "string" },
+        "title": { "type": "string", "maxLength": 200 },
+        "category": { "type": "string" },
+        "level": { "type": "string" },
+        "durationHours": { "type": "number" },
+        "department": { "type": "string" }
+      },
+      "required": ["id", "code", "title", "category"]
+    },
+    "Assessment": {
+      "title": "Assessment",
+      "description": "Interactive MCQ assessment questionnaire",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "code": { "type": "string" },
+        "title": { "type": "string", "maxLength": 200 },
+        "courseId": { "type": "string" },
+        "timeLimitMinutes": { "type": "number" },
+        "passingPercentage": { "type": "number" }
+      },
+      "required": ["id", "code", "title", "courseId"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile with role definition"
+    },
+    "/courses/{courseId}": {
+      "schema": "Course",
+      "description": "Published training courses"
+    },
+    "/assessments/{assessmentId}": {
+      "schema": "Assessment",
+      "description": "MCQ assessments and test papers"
+    }
+  }
+}

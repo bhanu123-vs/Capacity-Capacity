@@ -1,0 +1,6 @@
+{
+  "name": "Capacity Connect - MoES IMD Portal",
+  "description": "Interactive SIH Capacity Building & Training Portal for the Ministry of Earth Sciences (IMD), featuring role-based dashboards for Trainees, Trainers, and Admins with Competency Mapping, MCQ Assessments, Certification, and Content Builder.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
